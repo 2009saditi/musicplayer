@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamify - Premium Music Player</title>
+    <!-- Modern Typography from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- CORS Protocol File Block Warning Overlay -->
+    <div id="cors-warning" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #070708; color: #fff; z-index: 99999; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; padding: 20px; text-align: center;">
+        <h1 style="color: #00f5d4; margin-bottom: 15px; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">Browser CORS Blocked</h1>
+        <p style="max-width: 550px; line-height: 1.6; color: #9494a0; font-size: 15px; margin-bottom: 20px;">Streamify utilizes modern <b>ES Modules</b> which browser security policies restrict from loading when opening an HTML file directly (via double-clicking and the <code>file://</code> protocol).</p>
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid #202026; padding: 16px 24px; border-radius: 8px; text-align: left; font-family: monospace; font-size: 13px; color: #00f5d4; width: 100%; max-width: 500px; margin-bottom: 20px;">
+            $ npm install -g live-server<br>
+            $ live-server
+        </div>
+        <p style="font-weight: 600; color: #ffffff; font-size: 14px;">Please open the project folder in VS Code and click "Go Live", or run a local server in the directory.</p>
+    </div>
+
+    <!-- Runtime Error Stack Trace Overlay -->
+    <div id="error-screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #070708; color: #ff453a; z-index: 99998; flex-direction: column; align-items: center; justify-content: center; font-family: monospace; padding: 20px; text-align: left; overflow: auto;">
+        <div style="width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 15px;">
+            <h1 style="font-size: 24px; font-weight: 800; color: #1db954; border-bottom: 1px solid rgba(29,185,84,0.2); padding-bottom: 10px;">Streamify - Runtime Exception</h1>
+            <p style="color: #9494a0; font-size: 14px; font-family: sans-serif;">An unexpected error occurred during execution:</p>
+            <pre id="error-log" style="background: #121214; padding: 20px; border-radius: 10px; border: 1px solid #202026; white-space: pre-wrap; font-size: 13px; color: #ff8c8c; line-height: 1.5; overflow-x: auto;"></pre>
+            <button onclick="window.location.reload()" style="background: #ff3b30; color:#fff; border:none; padding:10px 20px; border-radius:20px; font-family:sans-serif; font-weight:700; cursor:pointer; align-self: flex-start;">Reload Page</button>
+        </div>
+    </div>
+
+    <script>
+        // Check for File Protocol
+        if (window.location.protocol === 'file:') {
+            document.getElementById('cors-warning').style.display = 'flex';
+        }
+        
+        // Listen for uncaught runtime script errors
+        window.addEventListener('error', function(e) {
+            var screen = document.getElementById('error-screen');
+            var log = document.getElementById('error-log');
+            if (screen && log) {
+                screen.style.display = 'flex';
+                log.innerText = e.message + '\n' + (e.error ? e.error.stack : 'No stack trace available');
+            }
+        });
+        
+        // Listen for unhandled promise rejections (async/await exceptions)
+        window.addEventListener('unhandledrejection', function(e) {
+            var screen = document.getElementById('error-screen');
+            var log = document.getElementById('error-log');
+            if (screen && log) {
+                screen.style.display = 'flex';
+                log.innerText = 'Unhandled Promise Rejection: ' + e.reason + '\n' + (e.reason && e.reason.stack ? e.reason.stack : '');
+            }
+        });
+    </script>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar"></aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header bar with Navigation, Search Input, and Stats -->
+            <header id="header-container" class="header-container"></header>
+            
+            <!-- Dynamic Content View Shell -->
+            <section id="view-container" class="view-container"></section>
+        </main>
+    </div>
+
+    <!-- Bottom Player Control Bar -->
+    <footer id="bottom-player-container" class="bottom-player-container"></footer>
+
+    <!-- Overlay Modals -->
+    <div id="modal-container" class="modal-container hidden"></div>
+
+    <!-- Floating Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- App Orchestrator -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
